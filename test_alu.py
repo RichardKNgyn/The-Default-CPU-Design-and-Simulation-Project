@@ -1,8 +1,3 @@
-"""
-Unit tests for ALU module
-Tests all arithmetic, logical, and shift operations
-"""
-
 import sys
 from alu import ALU
 
