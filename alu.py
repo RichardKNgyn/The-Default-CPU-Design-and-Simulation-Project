@@ -1,8 +1,3 @@
-"""
-ALU (Arithmetic Logic Unit) for RISC-V CPU
-Refactored to use private methods for better organization
-"""
-
 class ALU:
     """
     32-bit ALU for RISC-V processor
