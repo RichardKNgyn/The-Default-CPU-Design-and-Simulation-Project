@@ -1,7 +1,3 @@
-"""
-Test the complete CPU
-"""
-
 from cpu import RISCV_CPU
 
 def test_basic_arithmetic():
