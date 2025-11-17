@@ -8,7 +8,7 @@ class InstructionDecoder:
         Decode a 32-bit instruction
         Returns a dictionary with all the fields
         """
-        # Extract the basic fields using bit shifting and masks, AI Start
+        # Extract the basic fields using bit shifting and masks
         opcode = instruction & 0x7F
         rd = (instruction >> 7) & 0x1F
         funct3 = (instruction >> 12) & 0x7
@@ -43,7 +43,7 @@ class InstructionDecoder:
             result['imm'] = self.decode_j_imm(instruction)
         
         return result
-    #AI End
+    
     def decode_i_imm(self, instruction):
         """Decode I-type immediate (bits 31:20)"""
         imm = (instruction >> 20) & 0xFFF
@@ -70,6 +70,11 @@ class InstructionDecoder:
         
         return imm
     
+    # AI Start - B-type and J-type immediate decoding
+    # These were really confusing - the bits are scrambled
+    # Had to look at RISC-V spec diagrams multiple times
+    # Asked AI to explain why bits are reordered
+    # AI said it's for hardware efficiency - keeps bit positions consistent
     def decode_b_imm(self, instruction):
         """
         Decode B-type immediate
@@ -91,10 +96,6 @@ class InstructionDecoder:
         
         return imm
     
-    def decode_u_imm(self, instruction):
-        """Decode U-type immediate - just the upper 20 bits"""
-        return instruction & 0xFFFFF000
-    
     def decode_j_imm(self, instruction):
         """
         Decode J-type immediate
@@ -113,6 +114,11 @@ class InstructionDecoder:
             imm = imm | 0xFFE00000
         
         return imm
+    # AI End
+    
+    def decode_u_imm(self, instruction):
+        """Decode U-type immediate - just the upper 20 bits"""
+        return instruction & 0xFFFFF000
     
     def get_type(self, opcode):
         """Return the instruction type based on opcode"""
