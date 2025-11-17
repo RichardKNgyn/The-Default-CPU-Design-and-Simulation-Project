@@ -1,5 +1,4 @@
 def load_hex_file(filename, memory, start_address=0x0):
-   #AI Start
     """
     Load a .hex file into memory
     
@@ -23,7 +22,7 @@ def load_hex_file(filename, memory, start_address=0x0):
     try:
         with open(filename, 'r') as f:
             for line_num, line in enumerate(f, 1):
-                # Remove whitespace and comments
+                # Remove whitespace
                 line = line.strip()
                 
                 # Skip empty lines and comments
@@ -60,7 +59,7 @@ def load_hex_file(filename, memory, start_address=0x0):
         print(f"Error loading file: {e}")
         return 0
 
-#AI End
+
 def create_test_hex_file(filename="test_simple.hex"):
     """
     Create a simple test hex file for testing the loader

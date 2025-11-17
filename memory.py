@@ -3,7 +3,7 @@ class Memory:
     Simple memory system using dictionary for sparse storage
     Byte-addressable but we'll primarily use word access
     """
-    #Ai Start
+    
     def __init__(self, size=0x100000):  # 1MB default
         """
         Initialize memory
@@ -81,7 +81,7 @@ class Memory:
         word = (word & ~mask) | ((value & 0xFF) << (byte_offset * 8))
         
         self.data[word_addr] = word
-    #AI End
+    
     def clear(self):
         """Clear all memory"""
         self.data = {}
