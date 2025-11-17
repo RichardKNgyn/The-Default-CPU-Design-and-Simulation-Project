@@ -1,7 +1,6 @@
 class ALU:
     """
     32-bit ALU for RISC-V processor
-    Supports arithmetic, logical, shift, and comparison operations
     """
     
     def __init__(self):
@@ -14,98 +13,64 @@ class ALU:
         a = a & 0xFFFFFFFF
         b = b & 0xFFFFFFFF
         
-        # Dispatch to appropriate operation
         if operation == 'ADD':
-            self.result = self._add(a, b)
+            self.result = (a + b) & 0xFFFFFFFF
         elif operation == 'SUB':
-            self.result = self._sub(a, b)
+            self.result = (a - b) & 0xFFFFFFFF
         elif operation == 'AND':
-            self.result = self._and(a, b)
+            self.result = a & b
         elif operation == 'OR':
-            self.result = self._or(a, b)
+            self.result = a | b
         elif operation == 'XOR':
-            self.result = self._xor(a, b)
+            self.result = a ^ b
         elif operation == 'SLL':
-            self.result = self._sll(a, b)
+            shift = b & 0x1F
+            self.result = (a << shift) & 0xFFFFFFFF
         elif operation == 'SRL':
-            self.result = self._srl(a, b)
+            shift = b & 0x1F
+            self.result = (a >> shift) & 0xFFFFFFFF
         elif operation == 'SRA':
-            self.result = self._sra(a, b)
+            # Shift right arithmetic - preserve sign bit
+            shift = b & 0x1F
+            
+            # AI Start - arithmetic right shift with sign extension
+            # Had trouble with this - needed to preserve sign bit for negative numbers
+            # Asked AI how to handle sign extension in Python
+            # AI explained: check MSB, if set then fill with 1s from left
+            if a & 0x80000000:
+                # Fill with 1s from the left
+                result = a >> shift
+                sign_bits = 0xFFFFFFFF << (32 - shift)
+                self.result = (result | sign_bits) & 0xFFFFFFFF
+            else:
+                # Positive numbers just shift normally
+                self.result = (a >> shift) & 0xFFFFFFFF
+            # AI End
         elif operation == 'SLT':
-            self.result = self._slt(a, b)
+            # Set less than (signed)
+            # Convert to signed integers
+            if a & 0x80000000:
+                a_signed = a - 0x100000000
+            else:
+                a_signed = a
+            
+            if b & 0x80000000:
+                b_signed = b - 0x100000000
+            else:
+                b_signed = b
+            
+            self.result = 1 if a_signed < b_signed else 0
         elif operation == 'SLTU':
-            self.result = self._sltu(a, b)
+            # Set less than unsigned - just compare directly
+            self.result = 1 if a < b else 0
         else:
             print(f"Error: Unknown operation {operation}")
             self.result = 0
         
-        # Update zero flag
+        # Update zero flag for branch operations
         self.zero_flag = (self.result == 0)
         
         return self.result
-    
-    def _add(self, a, b):
-        """32-bit addition"""
-        return (a + b) & 0xFFFFFFFF
-    
-    def _sub(self, a, b):
-        """32-bit subtraction"""
-        return (a - b) & 0xFFFFFFFF
-    
-    def _and(self, a, b):
-        """Bitwise AND"""
-        return a & b
-    
-    def _or(self, a, b):
-        """Bitwise OR"""
-        return a | b
-    
-    def _xor(self, a, b):
-        """Bitwise XOR"""
-        return a ^ b
-    
-    def _sll(self, a, b):
-        """Shift left logical"""
-        shift = b & 0x1F
-        return (a << shift) & 0xFFFFFFFF
-    
-    def _srl(self, a, b):
-        """Shift right logical"""
-        shift = b & 0x1F
-        return (a >> shift) & 0xFFFFFFFF
-    
-    def _sra(self, a, b):
-        """Shift right arithmetic - preserves sign bit"""
-        shift = b & 0x1F
-        
-        # Check if MSB is set (negative number)
-        if a & 0x80000000:
-            # Fill with 1s from the left
-            result = a >> shift
-            sign_bits = 0xFFFFFFFF << (32 - shift)
-            return (result | sign_bits) & 0xFFFFFFFF
-        else:
-            # Positive numbers just shift normally
-            return (a >> shift) & 0xFFFFFFFF
-    
-    def _slt(self, a, b):
-        """Set less than (signed comparison)"""
-        # Convert to signed integers
-        if a & 0x80000000:
-            a_signed = a - 0x100000000
-        else:
-            a_signed = a
-        
-        if b & 0x80000000:
-            b_signed = b - 0x100000000
-        else:
-            b_signed = b
-        
-        return 1 if a_signed < b_signed else 0
-    
-    def _sltu(self, a, b):
-        """Set less than unsigned"""
-        return 1 if a < b else 0
     
     def get_result(self):
         """Get the last result"""
@@ -116,14 +81,13 @@ class ALU:
         return self.zero_flag
 
 
-# Test module
+# Test
 if __name__ == "__main__":
-    print("ALU Module Test")
-    print("=" * 40)
+    print("Testing ALU operations...")
     
     alu = ALU()
     
-    # Test a few operations, AI Start
+    # Test a few operations
     tests = [
         ('ADD', 5, 10, 15),
         ('SUB', 10, 5, 5),
@@ -131,7 +95,6 @@ if __name__ == "__main__":
         ('SLL', 1, 4, 16),
         ('SRA', 0x80000000, 1, 0xC0000000),
         ('SLT', 0xFFFFFFFF, 1, 1),  # -1 < 1
-    # AI End
     ]
     
     passed = 0
